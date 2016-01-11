@@ -19,6 +19,7 @@
     <![endif]-->
   </head>
 <body ng-controller="StratagemaMain">
+<div class="background-image"></div>
     
     <div ng-show="showPreload" class="preloadPage">
         <span class="levitate anim" id="title">STRATAGEMA</span>
@@ -46,9 +47,9 @@
     </nav>
     
     
-     <h1>{{ current.nombre }} | {{ current.id }} | {{ current.puntos }}</h1>
+     <!--<h1>{{ current.nombre }} | {{ current.id }} | {{ current.puntos }}</h1>-->
     
-    <div class="col-md-12">
+    <div class="col-md-12 sinMargen">
         
         <ul>
             <li ng-repeat="tarea in tareas" ng-include="'tree.html'"></li>
@@ -112,12 +113,14 @@
 
 
 <script src="js/angular.min.js"></script>
+<script src="js/jquery-1.12.0.min.js"></script>
+
 
 <script>
 
     $(document).ready(function(){
         $(".preloadPage").hide();
-    })
+    });
 
   var StratagemaApp = angular.module('StratagemaApp', []);
   
@@ -137,6 +140,7 @@
         $scope.tareas = [{id: 0,nombre: "Plan Estrategico", color: "#000", items: [], puntos: 100, checked: ""}];
     }
 
+    $scope.universalPunto = 100;
 
     $scope.current = $scope.tareas[0];
     
@@ -158,8 +162,8 @@
    
     $scope.deleteItem = function(current){
             var id = current.id;
-            item = searchTree($scope.tareas[0],current.id);
-            
+            item = getElement($scope.tareas,current.id);
+    
     };
     
     $scope.save = function(){
@@ -174,7 +178,6 @@
     $scope.editNode = function(modal){
             $scope.current.nombre = modal.tareaName;
             $scope.current.color = modal.tareaColor;
-            $scope.current.puntos = modal.puntos;
     };
     
     $scope.point = function(current){
@@ -187,7 +190,7 @@
     $scope.addNode = function(modal){
              
             $scope.current.items.push({
-               id : $scope.current.items.length+"-"+$scope.current.id,
+               id : $scope.current.id+"-"+$scope.current.items.length,
                nombre : modal.tareaName,
                color  : modal.tareaColor,
                puntos : 0,
@@ -207,6 +210,11 @@
             $scope.current = tarea;
             $("*").removeClass("selected");
             $("#"+tarea.id).addClass('selected');
+    };
+    
+    
+    $scope.getNumber = function(num) {
+        return new Array(num);   
     };
       
   });
@@ -253,11 +261,21 @@
     };
   });
   
+  
+  StratagemaApp.filter('range', function() {
+      return function(val, range) {
+        range = parseInt(range);
+        for (var i=0; i<range; i++)
+          val.push(i);
+        return val;
+      };
+});
+  
     
 </script>
 
 <script type="text/ng-template"  id="tree.html">
-    <p id="{{ tarea.id }}" class="item" style="color: {{ tarea.color }};" ng-click='navigate(tarea)'>{{ tarea.nombre }}</p>
+    <p id="{{ tarea.id }}" class="item" style="color: {{ tarea.color }};" ng-click='navigate(tarea)'>{{ tarea.nombre }} <span ng-repeat="n in [] | range:tarea.puntos%10"><span class="cocarda ng-class:{uno: (tarea.puntos >= 10), dos:(tarea.puntos >= 100) , tres:(tarea.puntos >= 1000)}"></span></span><span class="round ng-class:{asd: (tarea.puntos >10) }">{{ tarea.puntos }}</span></p>
     <ul>
         <li ng-repeat="tarea in tarea.items" ng-include="'tree.html'"></li>
     </ul>
@@ -265,31 +283,24 @@
 
 <script>
     function getElement(MiArray, id){
-        id = String(id).split("").reverse().join("");;
-        alert(id);
+        id = String(id);
         var elementos = id.split('-');
-        var este = MiArray[0];
+        var este = MiArray;
             if(id == 0){
-                return este;
+                return este[0];
             }
-            for(var i = 0; i < elementos.length-1 ; i++){
-                este = este.items[elementos[i]];
+            elementos.shift();
+            for(var i = 0; i < elementos.length ; i++){
+                if(i == 0){
+                    este = este[0].items[elementos[i]];
+                }
+                else{
+                    este = este.items[elementos[i]];
+                }
             }
             return este;  
     };
-    
-    function searchTree(element, matchingTitle){
-         if(element.id == matchingTitle){
-              return element;
-         }else if (element.items != null){
-              var result = null;
-              for(i=0; result == null && i < element.items.length; i++){
-                   result = searchTree(element.items[i], matchingTitle);
-              }
-              return result;
-         }
-         return null;
-    }
+
 </script>
         
 

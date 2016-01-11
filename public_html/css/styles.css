@@ -1,3 +1,17 @@
+.background-image {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -10;
+    display: block;
+    background-image: url('../img/15b29590c3303167f325752ac561a6cb.jpg');
+    
+    -webkit-filter: opacity(16%);
+    filter: opacity(16%);
+
+    width: 100%;
+    height: 100%;
+}
 p{
     margin: 0;
 }
@@ -28,16 +42,23 @@ p{
 }
 .navbar{
     padding:5px;
+    background-image: url('../img/15b29590c3303167f325752ac561a6cb.jpg');
 }
 
 ul
 {
     list-style-type: none;
+    padding-left: 30px;
+}
+.sinMargen{
+    padding-left: 0px;
 }
 li p{
-    color: #000;
+    color: #444;
     padding: 10px;
-    border: 5px solid white;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 li{
     font-size: 2rem;
@@ -69,16 +90,44 @@ span.anim{
 }
 
 .selected{
-    border: 5px solid darkkhaki;
-  -webkit-animation-name: colorize; /* Chrome, Safari, Opera */
-    -webkit-animation-duration: 1s; /* Chrome, Safari, Opera */
+    background-color: #D5D5D5;
     animation-name: colorize;
-    animation-duration: 0.4s;
+    animation-duration: 0.5s;
+}
+
+.cocarda{
+    background-image: url('../img/lineridermedals_pj2.gif');
+    background-position: 0px -12px; /* Cada 20px */
+    background-repeat: no-repeat;
+    height: 20px;
+    width: 10px;
+    display: inline-block;
+}
+.cocarda.uno{
+    background-position: 0px -53px; /* Cada 20px */
+}
+.cocarda.dos{
+    background-position: 0px -72px; /* Cada 20px */
+}
+.cocarda.tres{
+    background-position: -23px -94px; /* Cada 20px */
+}
+.round{
+    border-radius: 100%;
+    width: 20px;
+    height: 20px;
+    background-color: #909090;
+    color: #FFF;
+    font-size: 10px;
+    display: inline-block;
+    text-align: center;
+    padding-top:3px;
+    
 }
 
 @keyframes colorize {
-    from {border: 5px solid white;}
-    to {border: 5px solid darkkhaki;}
+    from {background-color: none;}
+    to {background-color: darkkhaki; }
 }
 
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
