@@ -1,0 +1,2 @@
+# stratagema
+Plan Estrategico Personal
