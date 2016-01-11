@@ -114,6 +114,11 @@
 <script src="js/angular.min.js"></script>
 
 <script>
+
+    $(document).ready(function(){
+        $(".preloadPage").hide();
+    })
+
   var StratagemaApp = angular.module('StratagemaApp', []);
   
   StratagemaApp.controller('StratagemaMain', function($scope) {
