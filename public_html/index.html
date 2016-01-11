@@ -1,0 +1,293 @@
+<!doctype html>
+<html ng-app="StratagemaApp">
+ <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">    
+    <link href="css/styles.css" rel="stylesheet">    
+    
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+<body ng-controller="StratagemaMain">
+    
+    <div ng-show="showPreload" class="preloadPage">
+        <span class="levitate anim" id="title">STRATAGEMA</span>
+        <br>
+        <br>
+        <span class="rotate glyphicon glyphicon-refresh"></span>
+    </div>
+    
+    
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <button ng-click="toggleModal()" class="btn btn-default">Agregar Item</button>
+
+          <button ng-click="toggleModalEdit(current)" class="btn btn-warning">Editar Item</button>
+
+          <button ng-click="point(current)" class="btn btn-info">Punto</button>
+
+          <button ng-click="deleteItem(current)" class="btn btn-danger">Borrar Item</button>
+
+          <button ng-click="save()" class="btn btn-success">Guardar</button>
+
+          <button ng-click="reset()" class="btn btn-danger">Reset</button>
+
+        </div>
+    </nav>
+    
+    
+     <h1>{{ current.nombre }} | {{ current.id }} | {{ current.puntos }}</h1>
+    
+    <div class="col-md-12">
+        
+        <ul>
+            <li ng-repeat="tarea in tareas" ng-include="'tree.html'"></li>
+        </ul>
+        
+    </div>
+    
+    
+
+    
+  <modal title="Agregar Item" id="addNode" visible="showModalEdit">
+    <form role="form">
+      <div class="form-group">
+        <label for="tarea">Tarea</label>
+        <input type="text" class="form-control" ng-model="modal.tareaName" placeholder="Nombre de la tarea" />
+      </div>
+      <div class="form-group">
+        <label for="color">Color</label>
+        <input type="color" class="form-control" ng-model="modal.tareaColor" placeholder="Color" />
+      </div>
+      <button ng-click="addNode(modal)" type="submit" class="btn btn-default">Guardar</button>
+    </form>
+  </modal>    
+  
+  <modal title="Editar item" id="addNode" visible="showModalEdit">
+    <form role="form">
+      <div class="form-group">
+        <label for="tarea">Tarea</label>
+        <input type="text" class="form-control" ng-model="modal.tareaName" placeholder="Nombre de la tarea" />
+      </div>
+      <div class="form-group">
+        <label for="color">Color</label>
+        <input type="color" class="form-control" ng-model="modal.tareaColor" placeholder="Color" />
+      </div>
+        <div class="form-group">
+          <label for="puntos">Puntos: {{ modal.puntos }}</label>
+          <input type="range" ng-model="modal.puntos" id="slider-1" min="0" max="100" value="{{ modal.puntos }}">
+        </div>
+      <button ng-click="editNode(modal)" type="submit" class="btn btn-default">Guardar</button>
+    </form>
+  </modal>  
+  
+  <modal title="Cargar Item" id="addNode" visible="showModal">
+    <form role="form">
+      <div class="form-group">
+        <label for="tarea">Tarea</label>
+        <input type="text" class="form-control" ng-model="modal.tareaName" placeholder="Nombre de la tarea" />
+      </div>
+      <div class="form-group">
+        <label for="color">Color</label>
+        <input type="color" class="form-control" ng-model="modal.tareaColor" placeholder="Color" />
+      </div>
+        <div class="form-group">
+          <label for="puntos">Puntos: {{ modal.puntos }}</label>
+          <input type="range" ng-model="modal.puntos" id="slider-1" min="0" max="100" value="0">
+        </div>        
+      <button ng-click="addNode(modal)" type="submit" class="btn btn-default">Guardar</button>
+    </form>
+  </modal>
+    
+
+
+<script src="js/angular.min.js"></script>
+
+<script>
+  var StratagemaApp = angular.module('StratagemaApp', []);
+  
+  StratagemaApp.controller('StratagemaMain', function($scope) {
+    $scope.greeting = 'Welcome!';
+    
+    $scope.showPreload = true;
+    
+    angular.element(document).ready(function () {
+            $scope.showPreload = false;
+        });
+    
+    if( localStorage.tareas != null){
+        $scope.tareas = JSON.parse(localStorage.tareas);
+    }
+    else{
+        $scope.tareas = [{id: 0,nombre: "Plan Estrategico", color: "#000", items: [], puntos: 100, checked: ""}];
+    }
+
+
+    $scope.current = $scope.tareas[0];
+    
+    $scope.modal = {};
+    
+    $scope.tarea = {};
+ 
+    $scope.showModal = false;
+    $scope.showModalEdit = false;
+    
+    $scope.total = 100;
+    
+    $scope.toggleModal = function(){
+        $scope.showModal = !$scope.showModal;
+    };
+    $scope.toggleModalEdit = function(){
+        $scope.showModalEdit = !$scope.showModalEdit;
+    };
+   
+    $scope.deleteItem = function(current){
+            var id = current.id;
+            item = searchTree($scope.tareas[0],current.id);
+            
+    };
+    
+    $scope.save = function(){
+         localStorage.tareas = JSON.stringify($scope.tareas);
+    };
+    
+    $scope.reset = function(){
+         localStorage.tareas = "nada";
+    };
+    
+    
+    $scope.editNode = function(modal){
+            $scope.current.nombre = modal.tareaName;
+            $scope.current.color = modal.tareaColor;
+            $scope.current.puntos = modal.puntos;
+    };
+    
+    $scope.point = function(current){
+            item = getElement($scope.tareas,current.id);
+            item.puntos++;
+    };
+
+    
+    
+    $scope.addNode = function(modal){
+             
+            $scope.current.items.push({
+               id : $scope.current.items.length+"-"+$scope.current.id,
+               nombre : modal.tareaName,
+               color  : modal.tareaColor,
+               puntos : 0,
+               checked : "",
+               items  : [],
+            });  
+    };
+    
+    $scope.addChecked = function(current){
+            item = searchTree($scope.tareas,current.id);
+            item.checked = "checked"; 
+            $scope.tarea.checked = true;
+    };
+    
+    $scope.navigate = function(tarea){
+            $scope.current = tarea;
+            $("*").removeClass("selected");
+            $("#"+tarea.id).addClass('selected');
+    };
+      
+  });
+  
+  StratagemaApp.directive('modal', function(){
+    return {
+      template: '<div class="modal fade">' + 
+          '<div class="modal-dialog">' + 
+            '<div class="modal-content">' + 
+              '<div class="modal-header">' + 
+                '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' + 
+                '<h4 class="modal-title">{{ title }}</h4>' + 
+              '</div>' + 
+              '<div class="modal-body" ng-transclude></div>' + 
+            '</div>' + 
+          '</div>' + 
+        '</div>',
+      restrict: 'E',
+      transclude: true,
+      replace:true,
+      scope:true,
+      link: function postLink(scope, element, attrs) {
+        scope.title = attrs.title;
+
+        scope.$watch(attrs.visible, function(value){
+          if(value == true)
+            $(element).modal('show');
+          else
+            $(element).modal('hide');
+        });
+
+        $(element).on('shown.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = true;
+          });
+        });
+
+        $(element).on('hidden.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = false;
+          });
+        });
+      }
+    };
+  });
+  
+    
+</script>
+
+<script type="text/ng-template"  id="tree.html">
+    <p id="{{ tarea.id }}" class="item" style="color: {{ tarea.color }};" ng-click='navigate(tarea)'>{{ tarea.nombre }}</p>
+    <ul>
+        <li ng-repeat="tarea in tarea.items" ng-include="'tree.html'"></li>
+    </ul>
+</script>
+
+<script>
+    function getElement(MiArray, id){
+        id = String(id).split("").reverse().join("");;
+        alert(id);
+        var elementos = id.split('-');
+        var este = MiArray[0];
+            if(id == 0){
+                return este;
+            }
+            for(var i = 0; i < elementos.length-1 ; i++){
+                este = este.items[elementos[i]];
+            }
+            return este;  
+    };
+    
+    function searchTree(element, matchingTitle){
+         if(element.id == matchingTitle){
+              return element;
+         }else if (element.items != null){
+              var result = null;
+              for(i=0; result == null && i < element.items.length; i++){
+                   result = searchTree(element.items[i], matchingTitle);
+              }
+              return result;
+         }
+         return null;
+    }
+</script>
+        
+
+<script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
